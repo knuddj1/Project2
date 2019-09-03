@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import gzip
 
+
 def parse(path):
   g = gzip.open(path, 'rb')
   for l in g:
@@ -15,6 +16,7 @@ def getDF(path):
     df[i] = d
     i += 1
   return pd.DataFrame.from_dict(df, orient='index')
+
 
 columns = ["reviewText", "overall"]
 score_vals = [1.0, 2.0, 3.0, 4.0, 5.0]
@@ -49,7 +51,7 @@ for filename in os.listdir(data_dir)[:2]:
     print("File '{0}' successfully split into ratings".format(filename))
     print()
 
-json_out_filepath = os.path.join(cwd, "samples_per_rating.json")
+json_out_filepath = os.path.join(split_dir, "samples_per_rating.json")
 with open(json_out_filepath, 'w') as json_file:
     json.dump(num_samples_per_rating_per_file, json_file, indent=4)
 
