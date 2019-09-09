@@ -26,8 +26,7 @@ class SentimentEngine:
 
         assert model_path in downloadables or os.path.isdir(model_path), "model_path must be from either one of {0} or a path to the directory of a local model".format(downloadables)
 
-        model_config = config.from_pretrained(model_path)
-        model_config.num_labels = num_labels
+        model_config = config.from_pretrained(model_path, num_labels=num_labels)
         tokenizer = tokenizer(model_path)
         model = model(model_config)
 

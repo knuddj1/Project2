@@ -61,6 +61,7 @@ class TransformerModel:
         accuracy = accuracy / len(data)
         return accuracy
 
+
     def predict(self, data, rtn_text_labels, label_converter, batch_size, max_seq_len):
         """Test model on a dataset"""
         predictions_dataloader = self._setup_dataloader(data, None, max_seq_len, batch_size)
