@@ -20,7 +20,7 @@ MODEL_NAMES = {
 class SentimentEngine:
     def __init__(self, model_name, model_path, num_labels=2):
         assert num_labels > 1, "num_labels must be greater than 1!"
-        assert model_name in MODEL_NAMES, "model_name must be one of {0}".format(MODEL_NAMES)
+        assert model_name in MODEL_NAMES, "model_name must be one of {0}".format(MODEL_NAMES.keys())
 
         config, tokenizer_cls, model_cls, downloadables, rtn_seg_pos = MODEL_NAMES[model_name]
 
