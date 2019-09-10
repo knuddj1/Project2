@@ -11,21 +11,20 @@ from multi_model_engine.processing import DataFetcher
 
 
 class TransformerModel:
-    def __init__(self, model, tokenizer, device, num_labels, rtn_seg_pos):
+    def __init__(self, model, tokenizer, device, rtn_seg_pos):
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
         self.model.to(self.device)
-        self.num_labels = num_labels
         self.rtn_seg_pos = rtn_seg_pos
 
 
-    def train(self, data, labels, output_dir, batch_size, max_seq_len,
+    def train(self, data, labels, batch_size, max_seq_len,
               n_epochs, learning_rate, adam_epsilon, warmup_steps):
         """Train model on dataset"""
         num_train_optim_steps = int(len(data) / batch_size) * n_epochs
         optimizer, scheduler = self._setup_optim(learning_rate, adam_epsilon, warmup_steps, num_train_optim_steps)
-        train_dataloader = self._setup_dataloader(data, labels, max_seq_len,  batch_size, shuffle=True, sampler=True)  
+        train_dataloader = self._setup_dataloader(data, labels, max_seq_len,  batch_size, shuffle=True)  
 
         self.model.train()
         for _ in trange(n_epochs, desc="Epoch"):
@@ -34,15 +33,9 @@ class TransformerModel:
                 outputs = self.model(**batch)
                 loss = outputs[0]
                 loss.backward()
-                scheduler.step()
                 optimizer.step()
+                scheduler.step()
                 optimizer.zero_grad()
-
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-            
-        self.model.save_pretrained(output_dir)
-        self.tokenizer.save_pretrained(output_dir)
 
 
     def test(self, data, labels, batch_size, max_seq_len):
@@ -52,13 +45,14 @@ class TransformerModel:
         criterion = Softmax(dim=-1)
         for batch_num, batch in enumerate(tqdm(test_dataloader, desc="Iteration")):
             with torch.no_grad():
-                batch = {k: t.to(self.device) for k, t in batch.items()}
+                labels = batch["labels"].to(self.device)
+                batch = {k: t.to(self.device) for k, t in batch.items() if k != "labels"}
                 outputs = self.model(**batch)
                 logits = outputs[0]
                 _, predictions = criterion(logits).max(-1)
                 results = predictions == labels
                 accuracy += results.sum().item()
-        accuracy = accuracy / len(data)
+        accuracy = accuracy / len(data) * 100
         return accuracy
 
 
@@ -82,19 +76,24 @@ class TransformerModel:
                 predictions += list(zip(*results))
         return predictions
 
+    def save(self, output_dir, save_model_name):
+        save_path = os.path.join(output_dir, save_model_name)
+        if not os.path.exists(save_path):
+            os.mkdir(save_path)
+            
+        self.model.save_pretrained(save_path)
+        self.tokenizer.save_pretrained(save_path)
 
-    def _convert_indices_to_sentiments(self, preds):
+    def _convert_indices_to_sentiments(self, preds, converter):
         sentiments = []
         for label in preds:
-            sentiments.append(self.label_converter[label])
+            sentiments.append(converter[label])
         return sentiments
 
 
-    def _setup_dataloader(self, data, labels, max_seq_len, batch_size, sampler=None, shuffle=False):
+    def _setup_dataloader(self, data, labels, max_seq_len, batch_size, shuffle=False):
         data_fetcher = DataFetcher(data, self.tokenizer, max_seq_len, self.rtn_seg_pos, labels)
-        if sampler:
-            sampler = RandomSampler(data_fetcher)
-        dataloader = DataLoader(data_fetcher, shuffle=True, sampler=sampler, batch_size=batch_size)
+        dataloader = DataLoader(data_fetcher, shuffle=True, batch_size=batch_size)
         return dataloader
 
 
