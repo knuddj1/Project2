@@ -22,7 +22,7 @@ class TransformerModel:
     def train(self, data, labels, batch_size, max_seq_len,
               learning_rate, adam_epsilon, warmup_steps):
         """Train model on dataset"""
-        num_train_optim_steps = int(len(data) / batch_size) * n_epochs
+        num_train_optim_steps = int(len(data) / batch_size)
         optimizer, scheduler = self._setup_optim(learning_rate, adam_epsilon, warmup_steps, num_train_optim_steps)
         train_dataloader = self._setup_dataloader(data, labels, max_seq_len,  batch_size, shuffle=True)  
 
