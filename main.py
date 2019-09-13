@@ -36,7 +36,7 @@ def get_data(data_path, split_percent):
             }
 
 
-    combined = zip(train_data, train_labels)
+    combined = list(zip(train_data, train_labels))
     shuffle(combined)
     train_data[:], train_labels[:] = zip(*combined)
     return train_data, train_labels, test_sets
