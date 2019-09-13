@@ -2,6 +2,7 @@ import argparse
 import os
 import csv
 import json
+from random import shuffle
 from multi_model_engine.engine import SentimentEngine
 
 
@@ -34,6 +35,10 @@ def get_data(data_path, split_percent):
                 "labels" : temp_labels[train_test_split:]
             }
 
+
+    combined = zip(train_data, train_labels)
+    shuffle(combined)
+    train_data[:], train_labels[:] = zip(*combined)
     return train_data, train_labels, test_sets
 
 def main():
@@ -56,24 +61,9 @@ def main():
     train_data, train_labels, test_sets = get_data(args.data_path, args.split_percent)
     
     clsf = SentimentEngine(args.model_name, args.model_path, num_labels=5)
-
-    for i in range(args.nb_epoch):
-        # Training model
-        clsf.train(train_data, train_labels)
-
-        chkpt_name = "chkpt epochs={0}".format(i)
-        clsf.save(model_save_dir, chkpt_name)
-
-        ## Testing model
-        results = {}
-        for testset_name, label_sets in test_sets.items():
-            results[testset_name] = {}
-            for label_name, testset  in label_sets.items():
-                results[testset_name][label_name] = clsf.test(testset["data"], testset["labels"])
+    # Training model
+    clsf.train(train_data, train_labels, test_sets, model_save_dir)
         
-        # Save test results
-        with open(os.path.join(model_save_dir, chkpt_name, "test_accuracy.json"), 'w') as f:
-            json.dump(results, f, indent=4)
 
             
 if __name__ == '__main__':

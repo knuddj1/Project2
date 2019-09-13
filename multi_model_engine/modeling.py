@@ -1,4 +1,5 @@
 import os
+import json
 
 import torch
 from torch.utils.data import RandomSampler, DataLoader
@@ -19,22 +20,38 @@ class TransformerModel:
         self.rtn_seg_pos = rtn_seg_pos
 
 
-    def train(self, data, labels, batch_size, max_seq_len,
+    def train(self, X_train, y_train, val_set, nb_epoch,
+              model_save_dir, batch_size, max_seq_len,
               learning_rate, adam_epsilon, warmup_steps):
         """Train model on dataset"""
-        num_train_optim_steps = int(len(data) / batch_size)
+        num_train_optim_steps = int(len(X_train) / batch_size) * nb_epoch
         optimizer, scheduler = self._setup_optim(learning_rate, adam_epsilon, warmup_steps, num_train_optim_steps)
-        train_dataloader = self._setup_dataloader(data, labels, max_seq_len,  batch_size, shuffle=True)  
+        train_dataloader = self._setup_dataloader(X_train, y_train, max_seq_len,  batch_size, shuffle=True)
 
         self.model.train()
-        for batch in tqdm(train_dataloader, desc="Iteration"):
-            batch = {k: t.to(self.device) for k, t in batch.items()}
-            outputs = self.model(**batch)
-            loss = outputs[0]
-            loss.backward()
-            optimizer.step()
-            scheduler.step()
-            optimizer.zero_grad()
+        for i in range(nb_epoch):
+            for batch in tqdm(train_dataloader, desc="Iteration"):
+                batch = {k: t.to(self.device) for k, t in batch.items()}
+                outputs = self.model(**batch)
+                loss = outputs[0]
+                loss.backward()
+                optimizer.step()
+                scheduler.step()
+                optimizer.zero_grad()
+            
+            chkpt_name = "chkpt epochs={0}".format(i + 1)
+            self.model.save(model_save_dir, chkpt_name)
+
+            ## Testing model
+            results = {}
+            for testset_name, label_sets in val_set.items():
+                results[testset_name] = {}
+                for label_name, testset  in label_sets.items():
+                    results[testset_name][label_name] = self.model.test(testset["data"], testset["labels"])
+            
+            # Save test results
+            with open(os.path.join(model_save_dir, chkpt_name, "test_accuracy.json"), 'w') as f:
+                json.dump(results, f, indent=4)
 
 
     def test(self, data, labels, batch_size, max_seq_len):

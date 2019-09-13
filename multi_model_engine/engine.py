@@ -40,9 +40,11 @@ class SentimentEngine:
         self.model = TransformerModel(model, tokenizer, device, rtn_seg_pos)
 
 
-    def train(self, data, labels, batch_size=32, max_seq_len=128,
+    def train(self, X_train, y_train, val_set, model_save_dir,
+              nb_epoch=5, batch_size=32, max_seq_len=128,
               learning_rate=3e-5, adam_epsilon=1e-8, warmup_steps=0):
-            self.model.train(data, labels, batch_size, max_seq_len,
+            self.model.train(X_train, y_train, val_set,
+                             nb_epoch, model_save_dir, batch_size, max_seq_len,
                              learning_rate, adam_epsilon, warmup_steps)
             
             
