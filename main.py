@@ -35,9 +35,9 @@ def get_data(data_path, split_percent):
                 "labels" : temp_labels[train_test_split:]
             }
 
-
     combined = list(zip(train_data, train_labels))
-    shuffle(combined)
+    for _ in range(10):
+        shuffle(combined)
     train_data[:], train_labels[:] = zip(*combined)
     return train_data, train_labels, test_sets
 
