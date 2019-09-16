@@ -47,7 +47,7 @@ class TransformerModel:
             for testset_name, label_sets in val_set.items():
                 results[testset_name] = {}
                 for label_name, testset  in label_sets.items():
-                    results[testset_name][label_name] = self.model.test(testset["data"], testset["labels"])
+                    results[testset_name][label_name] = self.test(testset["data"], testset["labels"])
             
             # Save test results
             with open(os.path.join(model_save_dir, chkpt_name, "test_accuracy.json"), 'w') as f:
