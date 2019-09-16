@@ -40,7 +40,7 @@ class TransformerModel:
                 optimizer.zero_grad()
             
             chkpt_name = "chkpt epochs={0}".format(i + 1)
-            self.model.save(model_save_dir, chkpt_name)
+            self.save(model_save_dir, chkpt_name)
 
             ## Testing model
             results = {}
