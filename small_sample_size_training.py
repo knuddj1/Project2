@@ -41,7 +41,7 @@ def load_testsets(fps):
 
 def main():
     models=[("bert", "bert-base-uncased"), ("roberta", "roberta-base"), ("distilbert", "distilbert-base-uncased")]
-    output_dir=os.path.join(os.getcwd(), "small_sample_size_models")
+    output_dir=os.path.join("F:/", "small_models")
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
     nb_epoch=5
