@@ -1,5 +1,6 @@
 import os
 import csv
+import torch
 from random import shuffle, sample
 from multi_model_engine.engine import SentimentEngine
 
@@ -65,6 +66,9 @@ def main():
             clsf = SentimentEngine(model_name, model_type, num_labels=num_labels)
             # Training model
             clsf.train(train_data[sample_size]["data"], train_data[sample_size]["labels"], test_sets, model_save_dir)
+
+            del clsf
+            torch.cuda.empty_cache()
         
 
             
