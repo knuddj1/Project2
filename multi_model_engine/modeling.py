@@ -53,6 +53,8 @@ class TransformerModel:
             with open(os.path.join(model_save_dir, chkpt_name, "test_accuracy.json"), 'w') as f:
                 json.dump(results, f, indent=4)
 
+            torch.cuda.empty_cache()
+
 
     def test(self, data, labels, batch_size, max_seq_len):
         """Test model on a dataset"""
@@ -69,6 +71,7 @@ class TransformerModel:
                 results = predictions == labels
                 accuracy += results.sum().item()
         accuracy = accuracy / len(data) * 100
+        torch.cuda.empty_cache()
         return accuracy
 
 
@@ -90,6 +93,7 @@ class TransformerModel:
                     text_labels = self._convert_indices_to_sentiments(indices, label_converter)
                     results = results + (text_labels,)
                 predictions += list(zip(*results))
+        torch.cuda.empty_cache()
         return predictions
 
     def save(self, output_dir, save_model_name):
