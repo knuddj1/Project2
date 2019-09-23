@@ -32,7 +32,7 @@ def load_testsets(fps):
     test_sets = {"test_sets": {}}
     for fp, name in fps:
         d, l = zip(*load_data(fp))
-        test_sets["test_sets"] = {
+        test_sets["test_sets"][name] = {
             "data" : d,
             "labels" : l
         }
