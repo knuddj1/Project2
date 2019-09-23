@@ -32,7 +32,7 @@ class TransformerModel:
         self.model.train()
         for i in range(nb_epoch):
             step=0
-            for step, batch in tqdm(train_dataloader, desc="Iteration"):
+            for batch in tqdm(train_dataloader, desc="Iteration"):
                 batch = {k: t.to(self.device) for k, t in batch.items()}
                 outputs = self.model(**batch)
                 loss = outputs[0]
