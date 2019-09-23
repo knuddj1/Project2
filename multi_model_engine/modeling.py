@@ -17,6 +17,7 @@ class TransformerModel:
         self.tokenizer = tokenizer
         self.device = device
         self.model.to(self.device)
+        self.model.detach()
         self.rtn_seg_pos = rtn_seg_pos
 
 
@@ -43,6 +44,10 @@ class TransformerModel:
                     scheduler.step()
                     self.model.zero_grad()
                 step += 1
+
+                batch.detach().cpu()
+                del batch
+                torch.cuda.empty_cache()
             
             chkpt_name = "chkpt epochs={0}".format(i + 1)
             self.save(model_save_dir, chkpt_name)
@@ -57,6 +62,8 @@ class TransformerModel:
             # Save test results
             with open(os.path.join(model_save_dir, chkpt_name, "test_accuracy.json"), 'w') as f:
                 json.dump(results, f, indent=4)
+
+        self.model.detach()
 
 
     def test(self, data, labels, batch_size, max_seq_len):
