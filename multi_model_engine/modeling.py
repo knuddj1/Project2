@@ -44,7 +44,7 @@ class TransformerModel:
                     self.model.zero_grad()
                 step += 1
 
-                batch.detach().cpu()
+                batch = {k: t.detach().cpu() for k, t in batch.items()}
                 del batch
                 torch.cuda.empty_cache()
             
@@ -79,7 +79,7 @@ class TransformerModel:
                 results = predictions == labels
                 accuracy += results.sum().item()
             
-            batch.detach().cpu()
+            batch = {k: t.detach().cpu() for k, t in batch.items()}
             del batch
             torch.cuda.empty_cache()
 
@@ -106,7 +106,7 @@ class TransformerModel:
                     results = results + (text_labels,)
                 predictions += list(zip(*results))
 
-                batch.detach().cpu()
+                batch = {k: t.detach().cpu() for k, t in batch.items()}
                 del batch
                 torch.cuda.empty_cache()
 
