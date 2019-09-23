@@ -42,10 +42,10 @@ class SentimentEngine:
 
     def train(self, X_train, y_train, val_set, model_save_dir,
               nb_epoch=5, batch_size=32, max_seq_len=128,
-              learning_rate=3e-5, adam_epsilon=1e-8, warmup_steps=0):
+              learning_rate=3e-5, adam_epsilon=1e-8, warmup_steps=0, gradient_accumulation_steps=1):
             self.model.train(X_train, y_train, val_set,
                              nb_epoch, model_save_dir, batch_size, max_seq_len,
-                             learning_rate, adam_epsilon, warmup_steps)
+                             learning_rate, adam_epsilon, warmup_steps, gradient_accumulation_steps)
             
             
 

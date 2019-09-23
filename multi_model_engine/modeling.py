@@ -22,22 +22,27 @@ class TransformerModel:
 
     def train(self, X_train, y_train, val_set, nb_epoch,
               model_save_dir, batch_size, max_seq_len,
-              learning_rate, adam_epsilon, warmup_steps):
+              learning_rate, adam_epsilon, warmup_steps, gradient_accumulation_steps):
         """Train model on dataset"""
         num_train_optim_steps = int(len(X_train) / batch_size) * nb_epoch
         optimizer, scheduler = self._setup_optim(learning_rate, adam_epsilon, warmup_steps, num_train_optim_steps)
         train_dataloader = self._setup_dataloader(X_train, y_train, max_seq_len,  batch_size, shuffle=True)
 
+        self.model.zero_grad()
         self.model.train()
         for i in range(nb_epoch):
-            for batch in tqdm(train_dataloader, desc="Iteration"):
+            step=0
+            for step, batch in tqdm(train_dataloader, desc="Iteration"):
                 batch = {k: t.to(self.device) for k, t in batch.items()}
                 outputs = self.model(**batch)
                 loss = outputs[0]
                 loss.backward()
-                optimizer.step()
-                scheduler.step()
-                optimizer.zero_grad()
+
+                if (step + 1) % gradient_accumulation_steps == 0:
+                    optimizer.step()
+                    scheduler.step()
+                    self.model.zero_grad()
+                step += 1
             
             chkpt_name = "chkpt epochs={0}".format(i + 1)
             self.save(model_save_dir, chkpt_name)
