@@ -55,8 +55,8 @@ def main():
     train_data = load_trainsets(train_fp, sample_sizes)
     test_sets = load_testsets(test_fps)
     
-    for sample_size in sample_sizes:
-        for model_name, model_type in models:
+    for model_name, model_type in models:
+        for sample_size in sample_sizes:
             model_save_name = f"{model_type}--samples={sample_size}--labels={num_labels}"
 
             model_save_dir = os.path.join(output_dir, model_save_name)
