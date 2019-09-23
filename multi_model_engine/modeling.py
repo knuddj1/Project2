@@ -17,7 +17,6 @@ class TransformerModel:
         self.tokenizer = tokenizer
         self.device = device
         self.model.to(self.device)
-        self.model.detach()
         self.rtn_seg_pos = rtn_seg_pos
 
 
@@ -63,7 +62,6 @@ class TransformerModel:
             with open(os.path.join(model_save_dir, chkpt_name, "test_accuracy.json"), 'w') as f:
                 json.dump(results, f, indent=4)
 
-        self.model.detach()
 
 
     def test(self, data, labels, batch_size, max_seq_len):
@@ -80,6 +78,11 @@ class TransformerModel:
                 _, predictions = criterion(logits).max(-1)
                 results = predictions == labels
                 accuracy += results.sum().item()
+            
+            batch.detach().cpu()
+            del batch
+            torch.cuda.empty_cache()
+
         accuracy = accuracy / len(data) * 100
         return accuracy
 
@@ -102,6 +105,11 @@ class TransformerModel:
                     text_labels = self._convert_indices_to_sentiments(indices, label_converter)
                     results = results + (text_labels,)
                 predictions += list(zip(*results))
+
+                batch.detach().cpu()
+                del batch
+                torch.cuda.empty_cache()
+
         return predictions
 
     def save(self, output_dir, save_model_name):
