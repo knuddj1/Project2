@@ -42,6 +42,7 @@ def main():
     
     for model_name, chkpt_dir, model_save in models:
         for model_type in os.listdir(chkpt_dir):
+            model_type = os.path.join(chkpt_dir, model_type)
             clsf = SentimentEngine(model_name, model_type)
             
             results = {}
