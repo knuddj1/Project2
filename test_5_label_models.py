@@ -58,9 +58,9 @@ def main():
                     results[testset_name][label_name] = acc / len(indices)
 
 
-        # Save test results
-        with open(os.path.join(os.getcwd(), model_save + "_test_accuracy.json"), 'w') as f:
-            json.dump(results, f, indent=4)
+            # Save test results
+            with open(os.path.join(os.getcwd(), model_save + "_test_accuracy.json"), 'w') as f:
+                json.dump(results, f, indent=4)
 
         del clsf
         torch.cuda.empty_cache()
