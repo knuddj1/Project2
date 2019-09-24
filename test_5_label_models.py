@@ -40,20 +40,21 @@ def main():
     test_fps = [(os.path.join("intial model training/dataset/custom_test_set", n), n) for n in os.listdir("intial model training/dataset/custom_test_set")]
     test_sets = load_testsets(test_fps)
     
-    for model_name, model_type, model_save in models:
-        clsf = SentimentEngine(model_name, model_type)
-        
-        results = {}
-        for testset_name, label_sets in test_sets.items():
-            results[testset_name] = {}
-            for label_name, testset  in label_sets.items():
-                preds = clsf.predict(testset["data"])
-                labels = testset["labels"]
-                indices = [substitute_label(x[-1]) for x in preds]
-                acc = 0
-                for pred, truth in zip(indices, labels):
-                    acc += 1 if pred == truth else 0
-                results[testset_name][label_name] = acc / len(indices)
+    for model_name, chkpt_dir, model_save in models:
+        for model_type in os.listdir(chkpt_dir):
+            clsf = SentimentEngine(model_name, model_type)
+            
+            results = {}
+            for testset_name, label_sets in test_sets.items():
+                results[testset_name] = {}
+                for label_name, testset  in label_sets.items():
+                    preds = clsf.predict(testset["data"])
+                    labels = testset["labels"]
+                    indices = [substitute_label(x[-1]) for x in preds]
+                    acc = 0
+                    for pred, truth in zip(indices, labels):
+                        acc += 1 if pred == truth else 0
+                    results[testset_name][label_name] = acc / len(indices)
 
 
         # Save test results
