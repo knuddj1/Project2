@@ -69,7 +69,7 @@ class TransformerModel:
         test_dataloader = self._setup_dataloader(data, labels, max_seq_len, batch_size)
         accuracy = 0
         criterion = Softmax(dim=-1)
-        for batch_num, batch in enumerate(tqdm(test_dataloader, desc="Iteration")):
+        for batch in tqdm(test_dataloader, desc="Iteration"):
             with torch.no_grad():
                 labels = batch["labels"].to(self.device)
                 batch = {k: t.to(self.device) for k, t in batch.items() if k != "labels"}
@@ -92,7 +92,7 @@ class TransformerModel:
         predictions_dataloader = self._setup_dataloader(data, None, max_seq_len, batch_size)
         predictions = []
         criterion = Softmax(dim=-1)
-        for batch_num, batch in enumerate(tqdm(predictions_dataloader, desc="Iteration")):
+        for batch in tqdm(predictions_dataloader, desc="Iteration"):
             with torch.no_grad():
                 batch = {k: t.to(self.device) for k, t in batch.items()}
                 outputs = self.model(**batch)
