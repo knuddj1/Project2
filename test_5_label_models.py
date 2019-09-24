@@ -45,6 +45,7 @@ def main():
             os.mkdir(model_save)
 
         for model_type in os.listdir(chkpt_dir):
+            chkpt_str = model_type
             model_type = os.path.join(chkpt_dir, model_type)
             clsf = SentimentEngine(model_name, model_type)
             
@@ -62,7 +63,7 @@ def main():
 
 
             # Save test results
-            with open(os.path.join(os.getcwd(), model_save, model_type + "_test_accuracy.json"), 'w') as f:
+            with open(os.path.join(os.getcwd(), model_save, chkpt_str + "_test_accuracy.json"), 'w') as f:
                 json.dump(results, f, indent=4)
 
         del clsf
