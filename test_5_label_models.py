@@ -41,7 +41,7 @@ def main():
     test_sets = load_testsets(test_fps)
     
     for model_name, chkpt_dir, model_save in models:
-        if not os.path.isdir(model_save)
+        if not os.path.isdir(model_save):
             os.mkdir(model_save)
 
         for model_type in os.listdir(chkpt_dir):
