@@ -1,0 +1,10 @@
+{
+    "test_sets": {
+        "Amazon Reviews.csv": 49.18032786885246,
+        "Fine Food Reviews.csv": 16.879547291835085,
+        "hand made.csv": 38.55421686746988,
+        "IMDB.csv": 59.12052117263844,
+        "Sentiment140.csv": 48.888888888888886,
+        "Twitter Airline.csv": 23.102948284195264
+    }
+}
