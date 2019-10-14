@@ -38,7 +38,7 @@ def get_data(data_dir):
     combined = list(zip(train_data, train_labels))
     for _ in range(10):
         shuffle(combined)
-    train_data[:], train_labels[:] = zip(*combined)
+    train_data, train_labels = zip(*combined)
     return train_data, train_labels, test_sets
 
 def main():
