@@ -31,7 +31,7 @@ def get_data(data_dir):
         fp = os.path.join(test_sets_dir, test_set)
         test_data, test_labels = load_data(fp)
         test_sets[test_sets_dir_name][test_set] = {
-            "data" : test_data
+            "data" : test_data,
             "labels" : test_labels
         }
 
